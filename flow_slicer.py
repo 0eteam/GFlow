@@ -158,9 +158,9 @@ class FlowSlicer(NFPlugin):
             # print("expire:" + str(len(im_every_flow)))
 
             print("fin_rest_num:", len(im_every_flow), len(im_flow_data))
-            with open('other.txt', 'a+') as f:
-                f.write(tmp_flow_all)
-                f.write('\n')
+            # with open('other.txt', 'a+') as f:
+            #     f.write(tmp_flow_all)
+            #     f.write('\n')
 
             # @tornado.gen.coroutine
             # def do_pub():

@@ -3,6 +3,8 @@ import nsq
 import threading
 import tornado
 
+
+
 class Get_flow(object):
     def __init__(self, num):
         self.data = []

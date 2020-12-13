@@ -2,31 +2,19 @@ from nfstream import NFStreamer, NFPlugin
 import binascii
 import nsq
 import tornado
+# import time
+# start = time.time()
 
+import logging
+logging.basicConfig(level=logging.INFO)
 
 im_every_flow = {}  # all flow (_C, id) of myself
 im_flow_id = -1
 im_flow_data = {}
 writer = nsq.Writer(['127.0.0.1:4150'])
 
-
+# f = open('/root/data/ISCX_Botnet_data.txt', 'a')
 class FlowSlicer(NFPlugin):
-
-    def decodeLoad(self, data):
-        """
-        :param data:二进制data
-        :return: 字符串data
-        """
-        str = binascii.b2a_hex(data).decode()
-        if str == '00':
-            return None
-        newLoad = ''
-        i = 0
-        for j in range(0, len(str), 2):
-            newLoad += str[j:j + 2] + ' '
-        newLoad = newLoad[:-1]
-        newLoad += '\n'
-        return newLoad
 
     def on_init(self, packet, flow):
         '''
@@ -41,7 +29,6 @@ class FlowSlicer(NFPlugin):
         # print(type(flow._C), flow._C)
         im_flow_id += 1
         im_every_flow.setdefault(str(flow._C), im_flow_id)
-        tmp_ip_packet = self.decodeLoad(packet.ip_packet[-int(packet.payload_size):])
         tmp_dict = {
             'type': 'packet1',
             'src_ip': packet.src_ip,
@@ -49,7 +36,6 @@ class FlowSlicer(NFPlugin):
             'dst_ip': packet.dst_ip,
             'dst_port': packet.dst_port,
             'protocol': packet.protocol,
-            'ip_packet': tmp_ip_packet,
             'ip_packet_binary': packet.ip_packet,
             'syn': packet.syn,
             'cwr': packet.cwr,
@@ -91,7 +77,6 @@ class FlowSlicer(NFPlugin):
         try:
             tmp_flow_C = str(flow._C)
             tmp_list_id = int(im_every_flow.get(tmp_flow_C))
-            tmp_ip_packet = self.decodeLoad(packet.ip_packet[-int(packet.payload_size):])
             tmp_dict = {
                 'type': 'packet' + str(len(im_flow_data[tmp_list_id]) + 1),
                 'src_ip': packet.src_ip,
@@ -99,7 +84,6 @@ class FlowSlicer(NFPlugin):
                 'dst_ip': packet.dst_ip,
                 'dst_port': packet.dst_port,
                 'protocol': packet.protocol,
-                'ip_packet': tmp_ip_packet,
                 'ip_packet_binary': packet.ip_packet,
                 'syn': packet.syn,
                 'cwr': packet.cwr,
@@ -150,17 +134,20 @@ class FlowSlicer(NFPlugin):
                 'packet_num': len(tmp_all_data)-1,
                 'all_data': tmp_all_data
             }
-            print(tmp_flow_all)
+            # print(tmp_flow_all)
             tmp_flow_all = str(tmp_flow_all)
 
             im_every_flow.pop(tmp_flow_C)
             im_flow_data.pop(tmp_list_id)
             # print("expire:" + str(len(im_every_flow)))
 
-            print("fin_rest_num:", len(im_every_flow), len(im_flow_data))
-            # with open('other.txt', 'a+') as f:
-            #     f.write(tmp_flow_all)
-            #     f.write('\n')
+            # f.write(tmp_flow_all)
+            # f.write("\n")
+
+            # print("fin_rest_num:", len(im_every_flow), len(im_flow_data))
+            with open('other_old.txt', 'a+') as f:
+                f.write(tmp_flow_all)
+                f.write('\n')
 
             # @tornado.gen.coroutine
             # def do_pub():
@@ -174,7 +161,7 @@ class FlowSlicer(NFPlugin):
         pass
 
 # main func
-my_streamer = NFStreamer(source="ens33",  # or network interface
+my_streamer = NFStreamer(source="/mnt/hgfs/share/ISCX_Botnet-Training.pcap",  # or network interface
                          decode_tunnels=True,
                          bpf_filter=None,
                          promiscuous_mode=True,
@@ -189,6 +176,12 @@ my_streamer = NFStreamer(source="ens33",  # or network interface
                          n_meters=0,
                          performance_report=0)
 
+i = 0
 for flow in my_streamer:
-    print("")
+    i += 1
+    print(i)
 
+
+# f.close()
+# end = time.time()
+# print("total time: {end_time} s".format(end_time=(end-start)))

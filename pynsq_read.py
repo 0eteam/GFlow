@@ -32,7 +32,7 @@ class Get_flow(object):
         try:
             r = nsq.Reader(
                 message_handler=handler,
-                nsqd_tcp_addresses=['192.168.75.129:4150'],
+                nsqd_tcp_addresses=['127.0.0.1:4150'],
                 topic='flow',
                 channel='read',
                 max_in_flight=1)
@@ -61,5 +61,5 @@ if __name__ == "__main__":
     get_fl = Get_flow(10)
     for i in range(10):
         data = get_fl.get_flow()
-        print(len(data), data)
+        print(len(data), type(data), data)
         print()

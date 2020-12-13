@@ -132,15 +132,18 @@ class FlowSlicer(NFPlugin):
             # print(tmp_flow_dict)
             # print(type(tmp_flow_dict))
             tmp_all_data.append(tmp_flow_dict)
+            # print(type(tmp_all_data))
 
             tmp_flow_all = {
                 'packet_num': len(tmp_all_data)-1,
                 'all_data': tmp_all_data
             }
-            tmp_flow_all = str(tmp_flow_all)
             r.delete(str(flow._C)[-9:-1])
 
-            print(tmp_flow_all)
+            # print(tmp_flow_all)
+            # print(type(tmp_flow_all))
+            # print(pickle.dumps(tmp_flow_all))
+            # print(pickle.loads(pickle.dumps(tmp_flow_all)))
 
             # f.write(tmp_flow_all)
             # f.write('\n')

@@ -1,3 +1,4 @@
+import requests
 from nfstream import NFStreamer, NFPlugin
 import binascii
 import nsq
@@ -21,7 +22,7 @@ start = time.time()
 import logging
 logging.basicConfig(level=logging.INFO)
 
-writer = nsq.Writer(['127.0.0.1:4150'])
+# writer = nsq.Writer(['127.0.0.1:4150'])
 
 # x = 0
 
@@ -149,11 +150,16 @@ class FlowSlicer(NFPlugin):
             # f.write('\n')
             # print("expire")
 
-            @tornado.gen.coroutine
-            def do_pub():
-                # yield tornado.gen.sleep(1)
-                writer.pub("flow", pickle.dumps(tmp_flow_all))
-            tornado.ioloop.PeriodicCallback(do_pub, 100).start()
+            requests.post("http://127.0.0.1:4151/pub?topic=flow", data=pickle.dumps(tmp_flow_all))
+            # respon = requests.post("http://127.0.0.1:4151/pub?topic=flow", data=pickle.dumps(tmp_flow_all))
+            # if respon.status_code == 200 and respon.text == "OK":
+            #     print("OK")
+
+            # @tornado.gen.coroutine
+            # def do_pub():
+            #     # yield tornado.gen.sleep(1)
+            #     writer.pub("flow", pickle.dumps(tmp_flow_all))
+            # tornado.ioloop.PeriodicCallback(do_pub, 100).start()
             # nsq.run()  # error
             # tornado.ioloop.IOLoop.instance().run_sync(do_pub)
 

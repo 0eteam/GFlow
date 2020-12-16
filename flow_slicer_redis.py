@@ -153,7 +153,9 @@ class FlowSlicer(NFPlugin):
             def do_pub():
                 # yield tornado.gen.sleep(1)
                 writer.pub("flow", pickle.dumps(tmp_flow_all))
-            tornado.ioloop.IOLoop.instance().run_sync(do_pub)
+            tornado.ioloop.PeriodicCallback(do_pub, 100).start()
+            # nsq.run()  # error
+            # tornado.ioloop.IOLoop.instance().run_sync(do_pub)
 
         except Exception as e:
             print("error:", e)
